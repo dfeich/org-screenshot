@@ -30,6 +30,9 @@
   The library requires the *import* command from the ImageMagick suite to
   be installed on your machine.
 
+* Usage
+  While in an org mode buffer, use the *org-screenshot* command to take a screenshot and
+  have it inserted at the current point.
 
 * Motivation
   Org with its Babel functionality is a great tool for producing technical

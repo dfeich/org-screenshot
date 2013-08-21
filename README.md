@@ -4,7 +4,8 @@
 <ul>
 <li><a href="#sec-1">1. Overview</a></li>
 <li><a href="#sec-2">2. Installation</a></li>
-<li><a href="#sec-3">3. Motivation</a></li>
+<li><a href="#sec-3">3. Usage</a></li>
+<li><a href="#sec-4">4. Motivation</a></li>
 </ul>
 </div>
 </div>
@@ -42,6 +43,11 @@ your `~/.emacs`:
 
 The library requires the **import** command from the ImageMagick suite to
 be installed on your machine.
+
+# Usage
+
+While in an org mode buffer, use the **org-screenshot** command to take a screenshot and
+have it inserted at the current point.
 
 # Motivation
 

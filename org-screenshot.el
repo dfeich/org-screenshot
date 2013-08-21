@@ -23,9 +23,9 @@
 
 ;; Commentary:
 
-;; allows taking screenshots from within an emacs org buffer. The
-;; link to the file will be placed at (point) and org inline images
-;; will be turned on to display it.
+;; allows taking screenshots from within an emacs org buffer by using
+;; the org-screenshot command. The link to the file will be placed at
+;; (point) and org inline images will be turned on to display it.
 
 ;; Screenshots are placed into the org entry's attachment
 ;; directory. If no attachment directory has been defined, the user
