@@ -4,7 +4,9 @@
  
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
-;; Version: 0.1.20130821
+;; Homepage: https://github.com/dfeich/org-screenshot
+;; Package-Requires: ((org "7")) 
+;; Version: 0.1.20130822
 
 ;; This file is not part of GNU Emacs.
 
@@ -41,8 +43,7 @@
 ;; Put this file into your load-path and the following into your ~/.emacs:
 ;;   (require 'org-screenshot)
 
-
-(provide 'org-screenshot)
+(require 'org-attach)
 
 ;;;###autoload
 (defun org-screenshot (prfx filename)
@@ -120,5 +121,7 @@ i       use attachment directory of ancestor entry:" "
       ;; we return the directory name and create it if necessary
       dir)
     (error "This is not org-mode, but %s" major-mode) nil))
+
+(provide 'org-screenshot)
 
 ;;; org-screenshot.el ends here
