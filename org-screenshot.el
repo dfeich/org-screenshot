@@ -1,7 +1,10 @@
 ;;; org-screenshot.el --- screenshots integrated with org attachment dirs
 
+;; Copyright (C) 2013 Derek Feichtinger
+ 
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
-;; Version: 0.1
+;; Keywords: org
+;; Version: 0.1.20130821
 
 ;; This file is not part of GNU Emacs.
 
@@ -20,7 +23,7 @@
 
 ;; Commentary:
 
-;; allows taking of screenshots from within an emacs org buffer. The
+;; allows taking screenshots from within an emacs org buffer. The
 ;; link to the file will be placed at (point) and org inline images
 ;; will be turned on to display it.
 
@@ -41,6 +44,7 @@
 
 (provide 'org-screenshot)
 
+;;;###autoload
 (defun org-screenshot (prfx filename)
   "take an area screenshot and place it in the entry's attachment
   directory
@@ -117,4 +121,4 @@ i       use attachment directory of ancestor entry:" "
       dir)
     (error "This is not org-mode, but %s" major-mode) nil))
 
-;; org-screenshot.el ends here
+;;; org-screenshot.el ends here
