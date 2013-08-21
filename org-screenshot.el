@@ -62,20 +62,21 @@ If no filename extension is provided, .png will be added."
     (setq filename (concat filename ".png")))
   (if (equal major-mode 'org-mode)
       (let ((scrfilename (concat (file-name-as-directory
-				       (org-screenshot-get-attach-dir))
-		     filename)))
-	      (if (and (file-exists-p scrfilename)
-		       (not (y-or-n-p (format "%s already exists. Overwrite?"
-					      scrfilename))))
-		  (call-interactively 'org-screenshot)
-		(insert (concat "[[file:" scrfilename "]]"))
-		;; this would cause asynchronous execution: (screenshot-take)
-		(unless prfx (make-frame-invisible nil t))
-		(call-process "import" nil nil nil scrfilename)
-		(unless prfx (make-frame-visible))
-		(org-display-inline-images nil t)))
+				  (org-screenshot-get-attach-dir))
+				 filename)))
+	(if (and (file-exists-p scrfilename)
+		 (not (y-or-n-p (format "%s already exists. Overwrite?"
+					scrfilename))))
+	    (call-interactively 'org-screenshot)
+	  (insert (concat "[[file:" scrfilename "]]"))
+	  (unless prfx (make-frame-invisible nil t))
+	  ;; we must canoncicalize the file name when we hand it
+	  ;; by call-process to the import command
+	  (call-process "import" nil nil nil (expand-file-name scrfilename))
+	  (unless prfx (make-frame-visible))
+	  (org-display-inline-images nil t)))
     (error "you are not in org mode"))
-)
+  )
 
 (defun org-screenshot-get-attach-dir ()
   "Return the current entry's attachment directory or let the
