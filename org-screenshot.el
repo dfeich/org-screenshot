@@ -6,7 +6,7 @@
 ;; Keywords: org
 ;; Homepage: https://github.com/dfeich/org-screenshot
 ;; Package-Requires: ((org "7")) 
-;; Version: 0.1.20130822
+;; Version: 0.1.20131103
 
 ;; This file is not part of GNU Emacs.
 
@@ -45,6 +45,12 @@
 
 (require 'org-attach)
 
+(defcustom org-screenshot-relative-links t
+  "if non-nil, the screenshot links placed in the org buffer will
+always be relative filenames. If nil, the links will just be the
+concatenation of the attachment dir and the filename"
+  :type 'boolean)
+
 ;;;###autoload
 (defun org-screenshot (prfx filename)
   "take an area screenshot and place it in the entry's attachment
@@ -54,7 +60,7 @@ The user is interactively prompted for a base file name for the
 screenshot. If the name is empty, a generic name will be
 generated.  If the org entry has no defined attachment directory,
 the user will be offered the choice to create one through the
-`my-get-org-attach-dir' function.
+`org-screenshot-my-get-org-attach-dir' function.
 
 The frame invoking the function gets hidden while taking the
 screenshot unless a prefix argument is passed (this allows
@@ -68,12 +74,19 @@ If no filename extension is provided, .png will be added."
   (if (equal major-mode 'org-mode)
       (let ((scrfilename (concat (file-name-as-directory
 				  (org-screenshot-get-attach-dir))
-				 filename)))
+				 filename))
+	    linkfilename)
+	(if org-screenshot-relative-links
+	    (setq linkfilename
+		  (file-relative-name
+		   scrfilename (file-name-directory
+				(or (buffer-file-name) default-directory))))
+	  (setq linkfilename scrfilename))
 	(if (and (file-exists-p scrfilename)
 		 (not (y-or-n-p (format "%s already exists. Overwrite?"
 					scrfilename))))
 	    (call-interactively 'org-screenshot)
-	  (insert (concat "[[file:" scrfilename "]]"))
+	  (insert (concat "[[file:" linkfilename "]]"))
 	  (unless prfx (make-frame-invisible nil t))
 	  ;; we must canoncicalize the file name when we hand it
 	  ;; by call-process to the import command

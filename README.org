@@ -34,6 +34,14 @@
   While in an org mode buffer, use the *org-screenshot* command to take a screenshot and
   have it inserted at the current point.
 
+  If the custom variable *org-screenshot-relative-links* is non-nil, the
+  links inserted in the org buffer will always be relative to the org
+  document's location. If the variable is set to nil, the links will
+  just be the concatenation of the attachment dir and the filename. So, if
+  absolute path names are desired, you should set this option to nil and
+  make sure that you specify absolute directory names for the attachment
+  directories.
+
 * Motivation
   Org with its Babel functionality is a great tool for producing technical
   documentation. One can directly use code snippets to produce graphics and
