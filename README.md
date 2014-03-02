@@ -3,12 +3,13 @@
 <div id="text-table-of-contents">
 <ul>
 <li><a href="#sec-1">1. Overview</a></li>
-<li><a href="#sec-2">2. Installation</a></li>
+<li><a href="#sec-2">2. Installation and configuration</a></li>
 <li><a href="#sec-3">3. Usage</a></li>
 <li><a href="#sec-4">4. Motivation</a></li>
 </ul>
 </div>
 </div>
+
 # Overview
 
 
@@ -18,31 +19,32 @@ buffer session.
 Features:
 
 -   The link to the image file will be placed at *point*
-
 -   *org inline images* will be turned on to display it.
-
 -   Screenshots are placed into the org entry's attachment
     directory.
-
 -   If no attachment directory has been defined, the user will be
     offered choices for creating one or using a directory of an entry
     higher up in the hierarchy.
-
 -   The emacs frame from which the command is issued will hide away
     during the screenshot taking, except if a prefix argument has been
     given (so to allow taking images of the emacs session itself).
     
-    ![nil](fig/figure1.png)
+    ![img](fig/figure1.png)
 
-# Installation
+# Installation and configuration
 
 Put org-screenshot.el into your load-path and the following into
 your `~/.emacs`:
 
     (require 'org-screenshot)
 
-The library requires the **import** command from the ImageMagick suite to
-be installed on your machine.
+You can customize the command that is used for taking the screenshot
+by configuring the `org-screenshot-command-line` variable.
+
+    (setq org-screenshot-command-line "mycommand -x -y -z %f")    
+
+By default the `import` command from the ImageMagick suite is used, i.e.
+the variable is set to "import %f".
 
 # Usage
 

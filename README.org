@@ -19,7 +19,7 @@
 
     [[file:fig/figure1.png]]
 
-* Installation
+* Installation and configuration
   Put org-screenshot.el into your load-path and the following into
   your =~/.emacs=:
 
@@ -27,9 +27,16 @@
 (require 'org-screenshot)
   #+END_SRC
 
-  The library requires the *import* command from the ImageMagick suite to
-  be installed on your machine.
+  You can customize the command that is used for taking the screenshot
+  by configuring the =org-screenshot-command-line= variable.
 
+  #+BEGIN_SRC emacs-lisp
+    (setq org-screenshot-command-line "mycommand -x -y -z %f")    
+  #+END_SRC
+
+  By default the =import= command from the ImageMagick suite is used, i.e.
+  the variable is set to "import %f".
+  
 * Usage
   While in an org mode buffer, use the *org-screenshot* command to take a screenshot and
   have it inserted at the current point.
