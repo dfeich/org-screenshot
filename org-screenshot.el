@@ -45,6 +45,11 @@
 
 (require 'org-attach)
 
+(defcustom org-screenshot-command-line "import %f"
+  "contains the command line used to take a screenshot. You need
+   to indicate the place where the filename should be substituted
+   by %f")
+
 (defcustom org-screenshot-relative-links t
   "if non-nil, the screenshot links placed in the org buffer will
 always be relative filenames. If nil, the links will just be the
@@ -75,7 +80,7 @@ If no filename extension is provided, .png will be added."
       (let ((scrfilename (concat (file-name-as-directory
 				  (org-screenshot-get-attach-dir))
 				 filename))
-	    linkfilename)
+	    linkfilename status)
 	(if org-screenshot-relative-links
 	    (setq linkfilename
 		  (file-relative-name
@@ -90,8 +95,16 @@ If no filename extension is provided, .png will be added."
 	  (unless prfx (make-frame-invisible nil t))
 	  ;; we must canoncicalize the file name when we hand it
 	  ;; by call-process to the import command
-	  (call-process "import" nil nil nil (expand-file-name scrfilename))
-	  (unless prfx (make-frame-visible))
+	  (let* ((arglst (split-string org-screenshot-command-line " "))
+		 (cmd (car arglst))
+		 (args (substitute
+			(expand-file-name scrfilename) "%f"
+			(cdr arglst) :test 'equal)))
+	    (setq status (apply 'call-process cmd nil nil nil args))
+	    (unless prfx (make-frame-visible))
+	    (unless (equal status 0)
+	      (error "screenshot command exited with status %d: %s" status
+		     (mapconcat 'identity (cons cmd args) " ")) ))
 	  (org-display-inline-images nil t)))
     (error "you are not in org mode"))
   )
