@@ -1,6 +1,6 @@
 ;;; org-screenshot.el --- screenshots integrated with org attachment dirs
 
-;; Copyright (C) 2013 Derek Feichtinger
+;; Copyright (C) 2013/2014 Derek Feichtinger
  
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
@@ -45,16 +45,21 @@
 
 (require 'org-attach)
 
+(defgroup org-screenshot nil
+  "Allows taking screenshots from within an emacs org
+buffer. Screenshot files are saved in locations that are defined
+by the org attachment system" :group 'org :version 24.3)
+
 (defcustom org-screenshot-command-line "import %f"
   "contains the command line used to take a screenshot. You need
    to indicate the place where the filename should be substituted
-   by %f")
+   by %f" :group 'org-screenshot)
 
 (defcustom org-screenshot-relative-links t
   "if non-nil, the screenshot links placed in the org buffer will
 always be relative filenames. If nil, the links will just be the
 concatenation of the attachment dir and the filename"
-  :type 'boolean)
+  :type 'boolean :group 'org-screenshot)
 
 ;;;###autoload
 (defun org-screenshot (prfx filename)
@@ -65,12 +70,20 @@ The user is interactively prompted for a base file name for the
 screenshot. If the name is empty, a generic name will be
 generated.  If the org entry has no defined attachment directory,
 the user will be offered the choice to create one through the
-`org-screenshot-my-get-org-attach-dir' function.
+`org-screenshot-get-attach-dir' function.
 
 The frame invoking the function gets hidden while taking the
-screenshot unless a prefix argument is passed (this allows
-taking screenshots of the emacs session itself).
-If no filename extension is provided, .png will be added."
+screenshot unless a prefix argument is passed (this allows taking
+screenshots of the emacs session itself).  If no filename
+extension is provided, .png will be added.
+
+The command for invoking the external screenshot utility can be
+customized using the `org-screenshot-command-line' variable.
+
+Note that the screenshots are not stored as actual attachments
+which would mean that entries for the Attachments would be
+written to the PROPERTIES section of a headline in addition to
+the links being already placed inside the text."
   (interactive "P\nsScreenshot base filename: ")
   (if (equal filename "")
       (setq filename (format-time-string "screenshot-%Y%m%d-%H%M%S.png")))
@@ -97,23 +110,24 @@ If no filename extension is provided, .png will be added."
 	  ;; by call-process to the import command
 	  (let* ((arglst (split-string org-screenshot-command-line " "))
 		 (cmd (car arglst))
-		 (args (substitute
-			(expand-file-name scrfilename) "%f"
-			(cdr arglst) :test 'equal)))
+		 (scrpath (convert-standard-filename  (expand-file-name scrfilename)))
+		 (args (cl-substitute  scrpath "%f" (cdr arglst) :test 'equal)))
 	    (setq status (apply 'call-process cmd nil nil nil args))
 	    (unless prfx (make-frame-visible))
 	    (unless (equal status 0)
 	      (error "screenshot command exited with status %d: %s" status
-		     (mapconcat 'identity (cons cmd args) " ")) ))
+		     (mapconcat 'identity (cons cmd args) " ")) )
+	    (message "wrote screenshot to %s" scrpath))
 	  (org-display-inline-images nil t)))
-    (error "you are not in org mode"))
+    (error "you are not in org mode - refusing to take a screenshot"))
   )
 
 (defun org-screenshot-get-attach-dir ()
   "Return the current entry's attachment directory or let the
-user create one. Also offers to use an attachment directory
-defined higher up in the hierarchy, even though inheritance has
-not been turned on"
+user create one. Also offers the option of using an attachment
+directory defined higher up in the org headline hierarchy, even
+though attachment inheritance has not been turned on by
+ATTACH_DIR_INHERIT."
   (require 'org-attach)
   (if (equal major-mode 'org-mode)
     (let 
