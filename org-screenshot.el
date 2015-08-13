@@ -1,11 +1,11 @@
 ;;; org-screenshot.el --- screenshots integrated with org attachment dirs
 
 ;; Copyright (C) 2013/2014 Derek Feichtinger
- 
+
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
 ;; Homepage: https://github.com/dfeich/org-screenshot
-;; Package-Requires: ((org "7")) 
+;; Package-Requires: ((org "7"))
 ;; Version: 0.1.20131103
 
 ;; This file is not part of GNU Emacs.
@@ -111,7 +111,10 @@ the links being already placed inside the text."
 	  (let* ((arglst (split-string org-screenshot-command-line " "))
 		 (cmd (car arglst))
 		 (scrpath (convert-standard-filename  (expand-file-name scrfilename)))
-		 (args (mapcar (lambda (x) (replace-regexp-in-string "%f" scrpath x))
+		 (args (mapcar (lambda (x)
+                                 (cond ((equal window-system 'w32)
+                                        scrpath)
+                                       (t (replace-regexp-in-string "%f" scrpath x))))
 			       (cdr arglst))))
 	    (setq status (apply 'call-process cmd nil nil nil args))
 	    (unless prfx (make-frame-visible))
@@ -131,36 +134,36 @@ though attachment inheritance has not been turned on by
 ATTACH_DIR_INHERIT."
   (require 'org-attach)
   (if (equal major-mode 'org-mode)
-    (let 
-	((dir (org-attach-dir)) (tmpbuf "*Screenshot Attach*")
-	 (inhdir (org-entry-get nil "ATTACH_DIR" t)) c)
-      (unless dir
-	(save-excursion
-	  (save-window-excursion 
-	    (with-output-to-temp-buffer tmpbuf
-	      (princ (concat
-		      "The current org entry has no attachment directory
+      (let
+          ((dir (org-attach-dir)) (tmpbuf "*Screenshot Attach*")
+           (inhdir (org-entry-get nil "ATTACH_DIR" t)) c)
+        (unless dir
+          (save-excursion
+            (save-window-excursion
+              (with-output-to-temp-buffer tmpbuf
+                (princ (concat
+                        "The current org entry has no attachment directory
 
 Select command:
 
 s       Set a specific attachment directory for this org entry
 c       have org create a standard directory name for this entry"
-		      (if inhdir (concat "
+                        (if inhdir (concat "
 i       use attachment directory of ancestor entry:" "
           " inhdir)))))
-	    (org-fit-window-to-buffer (get-buffer-window tmpbuf))
-	    (message "Select command:")
-	    (setq c (read-char-exclusive))
-	    (and (get-buffer tmpbuf) (kill-buffer tmpbuf))))
-	(cond
-	 ((memq c '(?s ?\C-s)) (call-interactively
-				'org-attach-set-directory)
-	  (setq dir (org-attach-dir t)))
-	 ((memq c '(?c ?\C-c)) (setq dir (org-attach-dir t)))
-	 ((and  (memq c '(?i ?\C-i)) inhdir) (setq dir inhdir))
-	 (t (error "No such attachment command %c" c)) )) 
-      ;; we return the directory name and create it if necessary
-      dir)
+              (org-fit-window-to-buffer (get-buffer-window tmpbuf))
+              (message "Select command:")
+              (setq c (read-char-exclusive))
+              (and (get-buffer tmpbuf) (kill-buffer tmpbuf))))
+          (cond
+           ((memq c '(?s ?\C-s)) (call-interactively
+                                  'org-attach-set-directory)
+            (setq dir (org-attach-dir t)))
+           ((memq c '(?c ?\C-c)) (setq dir (org-attach-dir t)))
+           ((and  (memq c '(?i ?\C-i)) inhdir) (setq dir inhdir))
+           (t (error "No such attachment command %c" c)) ))
+        ;; we return the directory name and create it if necessary
+        dir)
     (error "This is not org-mode, but %s" major-mode) nil))
 
 (provide 'org-screenshot)
