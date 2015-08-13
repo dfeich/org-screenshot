@@ -113,7 +113,9 @@ the links being already placed inside the text."
 		 (scrpath (convert-standard-filename  (expand-file-name scrfilename)))
 		 (args (mapcar (lambda (x)
                                  (cond ((equal window-system 'w32)
-                                        scrpath)
+                                        (if (equal x "%f")
+                                            scrpath
+                                          x))
                                        (t (replace-regexp-in-string "%f" scrpath x))))
 			       (cdr arglst))))
 	    (setq status (apply 'call-process cmd nil nil nil args))
