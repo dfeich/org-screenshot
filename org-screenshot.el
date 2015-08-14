@@ -111,7 +111,7 @@ the links being already placed inside the text."
 	  (let* ((arglst (split-string org-screenshot-command-line " "))
 		 (cmd (car arglst))
 		 (scrpath (convert-standard-filename  (expand-file-name scrfilename)))
-		 (args (mapcar (lambda (x) (replace-regexp-in-string "%f" scrpath x))
+		 (args (mapcar (lambda (x) (replace-regexp-in-string "%f" scrpath x t t))
 			       (cdr arglst))))
 	    (setq status (apply 'call-process cmd nil nil nil args))
 	    (unless prfx (make-frame-visible))
