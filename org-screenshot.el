@@ -23,7 +23,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
-;; Commentary:
+;;; Commentary:
 
 ;; allows taking screenshots from within an emacs org buffer by using
 ;; the org-screenshot command. The link to the file will be placed at
@@ -42,6 +42,8 @@
 
 ;; Put this file into your load-path and the following into your ~/.emacs:
 ;;   (require 'org-screenshot)
+
+;;; Code:
 
 (require 'org-attach)
 
