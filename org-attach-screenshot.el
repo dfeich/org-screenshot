@@ -1,10 +1,10 @@
-;;; org-screenshot.el --- screenshots integrated with org attachment dirs
+;;; org-attach-screenshot.el --- screenshots integrated with org attachment dirs
 
 ;; Copyright (C) 2013/2014 Derek Feichtinger
 
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
-;; Homepage: https://github.com/dfeich/org-screenshot
+;; Homepage: https://github.com/dfeich/org-attach-screenshot
 ;; Package-Requires: ((org "7")) 
 ;; Version: 0.1.20131103
 
@@ -26,7 +26,7 @@
 ;;; Commentary:
 
 ;; allows taking screenshots from within an emacs org buffer by using
-;; the org-screenshot command. The link to the file will be placed at
+;; the org-attach-screenshot command. The link to the file will be placed at
 ;; (point) and org inline images will be turned on to display it.
 
 ;; Screenshots are placed into the org entry's attachment
@@ -41,38 +41,38 @@
 ;; Requires the "import" command from the ImageMagick suite
 
 ;; Put this file into your load-path and the following into your ~/.emacs:
-;;   (require 'org-screenshot)
+;;   (require 'org-attach-screenshot)
 
 ;;; Code:
 
 (require 'org-attach)
 
-(defgroup org-screenshot nil
+(defgroup org-attach-screenshot nil
   "Allows taking screenshots from within an emacs org
 buffer. Screenshot files are saved in locations that are defined
 by the org attachment system" :group 'org :version 24.3)
 
-(defcustom org-screenshot-command-line "import %f"
+(defcustom org-attach-screenshot-command-line "import %f"
   "Contains the command line used to take a screenshot.
 You need to indicate the place where the filename should be
-substituted by %f" :group 'org-screenshot)
+substituted by %f" :group 'org-attach-screenshot)
 
-(defcustom org-screenshot-relative-links t
+(defcustom org-attach-screenshot-relative-links t
   "Configure whether to use relative filenames.
 If non-nil, the screenshot links placed in the org buffer will
 always be relative filenames.  If nil, the links will just be the
 concatenation of the attachment dir and the filename"
-  :type 'boolean :group 'org-screenshot)
+  :type 'boolean :group 'org-attach-screenshot)
 
 ;;;###autoload
-(defun org-screenshot (prfx filename)
+(defun org-attach-screenshot (prfx filename)
   "Take an area screenshot and place it in the entry's attachment directory.
 
 The user is interactively prompted for a base FILENAME for the
 screenshot.  If the name is empty, a generic name will be
 generated.  If the org entry has no defined attachment directory,
 the user will be offered the choice to create one through the
-`org-screenshot-get-attach-dir' function.
+`org-attach-screenshot-get-attach-dir' function.
 
 The frame invoking the function gets hidden while taking the
 screenshot unless a prefix argument PRFX is passed (this allows
@@ -80,7 +80,7 @@ taking screenshots of the Emacs session itself).  If no filename
 extension is provided, .png will be added.
 
 The command for invoking the external screenshot utility can be
-customized using the `org-screenshot-command-line' variable.
+customized using the `org-attach-screenshot-command-line' variable.
 
 Note that the screenshots are not stored as actual attachments
 which would mean that entries for the Attachments would be
@@ -93,10 +93,10 @@ the links being already placed inside the text."
     (setq filename (concat filename ".png")))
   (if (equal major-mode 'org-mode)
       (let ((scrfilename (concat (file-name-as-directory
-				  (org-screenshot-get-attach-dir))
+				  (org-attach-screenshot-get-attach-dir))
 				 filename))
 	    linkfilename status)
-	(if org-screenshot-relative-links
+	(if org-attach-screenshot-relative-links
 	    (setq linkfilename
 		  (file-relative-name
 		   scrfilename (file-name-directory
@@ -105,12 +105,12 @@ the links being already placed inside the text."
 	(if (and (file-exists-p scrfilename)
 		 (not (y-or-n-p (format "%s already exists. Overwrite?"
 					scrfilename))))
-	    (call-interactively 'org-screenshot)
+	    (call-interactively 'org-attach-screenshot)
 	  (insert (concat "[[file:" linkfilename "]]"))
 	  (unless prfx (make-frame-invisible nil t))
 	  ;; we must canoncicalize the file name when we hand it
 	  ;; by call-process to the import command
-	  (let* ((arglst (split-string org-screenshot-command-line " "))
+	  (let* ((arglst (split-string org-attach-screenshot-command-line " "))
 		 (cmd (car arglst))
 		 (scrpath (convert-standard-filename  (expand-file-name scrfilename)))
 		 (args (mapcar (lambda (x) (replace-regexp-in-string "%f" scrpath x t t))
@@ -125,7 +125,7 @@ the links being already placed inside the text."
     (error "you are not in org mode - refusing to take a screenshot"))
   )
 
-(defun org-screenshot-get-attach-dir ()
+(defun org-attach-screenshot-get-attach-dir ()
   "Return or create the current entry's attachment directory.
 Also offers the option of using an attachment directory defined
 higher up in the org headline hierarchy, even though attachment
@@ -164,6 +164,5 @@ i       use attachment directory of ancestor entry:" "
 	dir)
     (error "This is not org-mode, but %s" major-mode) nil))
 
-(provide 'org-screenshot)
-
-;;; org-screenshot.el ends here
+(provide 'org-attach-screenshot)
+;;; org-attach-screenshot.el ends here
