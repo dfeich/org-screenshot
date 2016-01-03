@@ -1,7 +1,7 @@
 ;;; org-screenshot.el --- screenshots integrated with org attachment dirs
 
 ;; Copyright (C) 2013/2014 Derek Feichtinger
- 
+
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
 ;; Homepage: https://github.com/dfeich/org-screenshot
@@ -53,30 +53,30 @@ buffer. Screenshot files are saved in locations that are defined
 by the org attachment system" :group 'org :version 24.3)
 
 (defcustom org-screenshot-command-line "import %f"
-  "contains the command line used to take a screenshot. You need
-   to indicate the place where the filename should be substituted
-   by %f" :group 'org-screenshot)
+  "Contains the command line used to take a screenshot.
+You need to indicate the place where the filename should be
+substituted by %f" :group 'org-screenshot)
 
 (defcustom org-screenshot-relative-links t
-  "if non-nil, the screenshot links placed in the org buffer will
-always be relative filenames. If nil, the links will just be the
+  "Configure whether to use relative filenames.
+If non-nil, the screenshot links placed in the org buffer will
+always be relative filenames.  If nil, the links will just be the
 concatenation of the attachment dir and the filename"
   :type 'boolean :group 'org-screenshot)
 
 ;;;###autoload
 (defun org-screenshot (prfx filename)
-  "take an area screenshot and place it in the entry's attachment
-  directory
+  "Take an area screenshot and place it in the entry's attachment directory.
 
-The user is interactively prompted for a base file name for the
-screenshot. If the name is empty, a generic name will be
+The user is interactively prompted for a base FILENAME for the
+screenshot.  If the name is empty, a generic name will be
 generated.  If the org entry has no defined attachment directory,
 the user will be offered the choice to create one through the
 `org-screenshot-get-attach-dir' function.
 
 The frame invoking the function gets hidden while taking the
-screenshot unless a prefix argument is passed (this allows taking
-screenshots of the emacs session itself).  If no filename
+screenshot unless a prefix argument PRFX is passed (this allows
+taking screenshots of the Emacs session itself).  If no filename
 extension is provided, .png will be added.
 
 The command for invoking the external screenshot utility can be
@@ -126,43 +126,42 @@ the links being already placed inside the text."
   )
 
 (defun org-screenshot-get-attach-dir ()
-  "Return the current entry's attachment directory or let the
-user create one. Also offers the option of using an attachment
-directory defined higher up in the org headline hierarchy, even
-though attachment inheritance has not been turned on by
-ATTACH_DIR_INHERIT."
+  "Return or create the current entry's attachment directory.
+Also offers the option of using an attachment directory defined
+higher up in the org headline hierarchy, even though attachment
+inheritance has not been turned on by ATTACH_DIR_INHERIT."
   (require 'org-attach)
   (if (equal major-mode 'org-mode)
-    (let 
-	((dir (org-attach-dir)) (tmpbuf "*Screenshot Attach*")
-	 (inhdir (org-entry-get nil "ATTACH_DIR" t)) c)
-      (unless dir
-	(save-excursion
-	  (save-window-excursion 
-	    (with-output-to-temp-buffer tmpbuf
-	      (princ (concat
-		      "The current org entry has no attachment directory
+      (let 
+	  ((dir (org-attach-dir)) (tmpbuf "*Screenshot Attach*")
+	   (inhdir (org-entry-get nil "ATTACH_DIR" t)) c)
+	(unless dir
+	  (save-excursion
+	    (save-window-excursion 
+	      (with-output-to-temp-buffer tmpbuf
+		(princ (concat
+			"The current org entry has no attachment directory
 
 Select command:
 
 s       Set a specific attachment directory for this org entry
 c       have org create a standard directory name for this entry"
-		      (if inhdir (concat "
+			(if inhdir (concat "
 i       use attachment directory of ancestor entry:" "
           " inhdir)))))
-	    (org-fit-window-to-buffer (get-buffer-window tmpbuf))
-	    (message "Select command:")
-	    (setq c (read-char-exclusive))
-	    (and (get-buffer tmpbuf) (kill-buffer tmpbuf))))
-	(cond
-	 ((memq c '(?s ?\C-s)) (call-interactively
-				'org-attach-set-directory)
-	  (setq dir (org-attach-dir t)))
-	 ((memq c '(?c ?\C-c)) (setq dir (org-attach-dir t)))
-	 ((and  (memq c '(?i ?\C-i)) inhdir) (setq dir inhdir))
-	 (t (error "No such attachment command %c" c)) )) 
-      ;; we return the directory name and create it if necessary
-      dir)
+	      (org-fit-window-to-buffer (get-buffer-window tmpbuf))
+	      (message "Select command:")
+	      (setq c (read-char-exclusive))
+	      (and (get-buffer tmpbuf) (kill-buffer tmpbuf))))
+	  (cond
+	   ((memq c '(?s ?\C-s)) (call-interactively
+				  'org-attach-set-directory)
+	    (setq dir (org-attach-dir t)))
+	   ((memq c '(?c ?\C-c)) (setq dir (org-attach-dir t)))
+	   ((and  (memq c '(?i ?\C-i)) inhdir) (setq dir inhdir))
+	   (t (error "No such attachment command %c" c)) )) 
+	;; we return the directory name and create it if necessary
+	dir)
     (error "This is not org-mode, but %s" major-mode) nil))
 
 (provide 'org-screenshot)
