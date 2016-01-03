@@ -10,18 +10,20 @@
 </div>
 </div>
 
+# Overview<a id="orgheadline1"></a>
+
 org-attach-screenshot allows taking screenshots from within an emacs org
 buffer session.
 
-****Important note:**** This package was originally named
-**org-screenshot**, but due to a name clash with one of the
+**Important note:** This package was originally named
+*org-screenshot*, but due to a name clash with one of the
 org-contrib packages, I decided to rename it to
-**org-attach-screenshot**.
+*org-attach-screenshot*.
 
 Features:
 
--   The link to the image file will be placed at **point**
--   **org inline images** will be turned on to display it.
+-   The link to the image file will be placed at *point*
+-   *org inline images* will be turned on to display it.
 -   Screenshots are placed into the org entry's attachment
     directory.
 -   If no attachment directory has been defined, the user will be
@@ -31,31 +33,37 @@ Features:
     during the screenshot taking, except if a prefix argument has been
     given (so to allow taking images of the emacs session itself).
     
-    \\![img](fig/figure1.png)
+    ![img](fig/figure1.png)
+
+# Installation and configuration<a id="orgheadline2"></a>
 
 Put org-attach-screenshot.el into your load-path and the following into
-your \`~/.emacs\`:
+your `~/.emacs`:
 
-(require 'org-attach-screenshot)
+    (require 'org-attach-screenshot)
 
 You can customize the command that is used for taking the screenshot
-by configuring the \`org-attach-screenshot-command-line\` variable.
+by configuring the `org-attach-screenshot-command-line` variable.
 
-(setq org-attach-screenshot-command-line "mycommand -x -y -z %f")
+    (setq org-attach-screenshot-command-line "mycommand -x -y -z %f")
 
-By default the \`import\` command from the ImageMagick suite is used, i.e.
+By default the `import` command from the ImageMagick suite is used, i.e.
 the variable is set to "import %f".
 
-While in an org mode buffer, use the ****org-attach-screenshot**** command to take a screenshot and
+# Usage<a id="orgheadline3"></a>
+
+While in an org mode buffer, use the **org-attach-screenshot** command to take a screenshot and
 have it inserted at the current point.
 
-If the custom variable ****org-attach-screenshot-relative-links**** is non-nil, the
+If the custom variable **org-attach-screenshot-relative-links** is non-nil, the
 links inserted in the org buffer will always be relative to the org
 document's location. If the variable is set to nil, the links will
 just be the concatenation of the attachment dir and the filename. So, if
 absolute path names are desired, you should set this option to nil and
 make sure that you specify absolute directory names for the attachment
 directories.
+
+# Motivation<a id="orgheadline4"></a>
 
 Org with its Babel functionality is a great tool for producing technical
 documentation. One can directly use code snippets to produce graphics and
@@ -73,7 +81,7 @@ I think that org-attach-screenshot will also be useful for users of
 the more agenda related strengths of org mode.
 
 BTW: There is another nice generic screenshot library available for
-emacs ([screenshot.el by rubikitch](<http://www.emacswiki.org/emacs/screenshot.el>)) with some great features, but
+emacs ([screenshot.el by rubikitch](http://www.emacswiki.org/emacs/screenshot.el)) with some great features, but
 different focus (more generic, allows uploads of screenshots to
 remote servers and offers multiple predefined storage targets). I used
 it at first as a dependency of this module, but since I essentially ended up only
