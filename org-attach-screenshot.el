@@ -4,7 +4,7 @@
 
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
-;; Homepage: https://github.com/dfeich/org-attach-screenshot
+;; Homepage: https://github.com/dfeich/org-screenshot
 ;; Version: 0.1.20160103
 
 ;; This file is not part of GNU Emacs.
