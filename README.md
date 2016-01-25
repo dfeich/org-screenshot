@@ -10,6 +10,8 @@
 </div>
 </div>
 
+[![img](//melpa.org/packages/org-attach-screenshot-badge.svg)](http://melpa.org/#/org-attach-screenshot)
+
 # Overview<a id="orgheadline1"></a>
 
 org-attach-screenshot allows taking screenshots from within an emacs org

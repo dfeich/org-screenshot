@@ -1,3 +1,5 @@
+[[http://melpa.org/#/org-attach-screenshot][http://melpa.org/packages/org-attach-screenshot-badge.svg]]
+
 * Overview
   :PROPERTIES:
   :ATTACH_DIR: fig
