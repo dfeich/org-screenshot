@@ -1,11 +1,9 @@
 ;;; org-attach-screenshot.el --- screenshots integrated with org attachment dirs
 
-;; Copyright (C) 2013/2014 Derek Feichtinger
-
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
 ;; Homepage: https://github.com/dfeich/org-screenshot
-;; Version: 0.1.20160103
+;; Version: 0.1.20160529
 
 ;; This file is not part of GNU Emacs.
 
@@ -45,6 +43,12 @@
 ;;; Code:
 
 (require 'org-attach)
+
+;; save-mark-and-excursion in Emacs 25 works like save-excursion did before
+(eval-when-compile
+  (when (< emacs-major-version 25)
+    (defmacro save-mark-and-excursion (&rest body)
+      `(save-excursion ,@body))))
 
 (defgroup org-attach-screenshot nil
   "Allows taking screenshots from within an emacs org
@@ -135,23 +139,23 @@ inheritance has not been turned on by ATTACH_DIR_INHERIT."
 	  ((dir (org-attach-dir)) (tmpbuf "*Screenshot Attach*")
 	   (inhdir (org-entry-get nil "ATTACH_DIR" t)) c)
 	(unless dir
-	  (save-excursion
-	    (save-window-excursion 
-	      (with-output-to-temp-buffer tmpbuf
-		(princ (concat
-			"The current org entry has no attachment directory
+	  (save-mark-and-excursion
+	   (save-window-excursion
+	     (with-output-to-temp-buffer tmpbuf
+	       (princ (concat
+		       "The current org entry has no attachment directory
 
 Select command:
 
 s       Set a specific attachment directory for this org entry
 c       have org create a standard directory name for this entry"
-			(if inhdir (concat "
+		       (if inhdir (concat "
 i       use attachment directory of ancestor entry:" "
           " inhdir)))))
-	      (org-fit-window-to-buffer (get-buffer-window tmpbuf))
-	      (message "Select command:")
-	      (setq c (read-char-exclusive))
-	      (and (get-buffer tmpbuf) (kill-buffer tmpbuf))))
+	     (org-fit-window-to-buffer (get-buffer-window tmpbuf))
+	     (message "Select command:")
+	     (setq c (read-char-exclusive))
+	     (and (get-buffer tmpbuf) (kill-buffer tmpbuf))))
 	  (cond
 	   ((memq c '(?s ?\C-s)) (call-interactively
 				  'org-attach-set-directory)
