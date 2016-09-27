@@ -60,6 +60,10 @@ by the org attachment system" :group 'org :version 24.3)
 You need to indicate the place where the filename should be
 substituted by %f" :group 'org-attach-screenshot)
 
+(defcustom org-attach-screenshot-dirfunction nil
+  "Function generating an attachment directory name.
+Will be used to generate a directory name if it is not set to nil.")
+
 (defcustom org-attach-screenshot-relative-links t
   "Configure whether to use relative filenames.
 If non-nil, the screenshot links placed in the org buffer will
@@ -137,7 +141,10 @@ inheritance has not been turned on by ATTACH_DIR_INHERIT."
   (if (equal major-mode 'org-mode)
       (let 
 	  ((dir (org-attach-dir)) (tmpbuf "*Screenshot Attach*")
-	   (inhdir (org-entry-get nil "ATTACH_DIR" t)) c)
+	   (inhdir (org-entry-get nil "ATTACH_DIR" t))
+	   (funcdir (when org-attach-screenshot-dirfunction
+		      (funcall org-attach-screenshot-dirfunction)))
+	   c)
 	(unless dir
 	  (save-mark-and-excursion
 	   (save-window-excursion
@@ -149,6 +156,10 @@ Select command:
 
 s       Set a specific attachment directory for this org entry
 c       have org create a standard directory name for this entry"
+		       (when funcdir
+			 (concat "
+d       use name from user defined function:"  "
+          " funcdir))
 		       (if inhdir (concat "
 i       use attachment directory of ancestor entry:" "
           " inhdir)))))
@@ -161,7 +172,10 @@ i       use attachment directory of ancestor entry:" "
 				  'org-attach-set-directory)
 	    (setq dir (org-attach-dir t)))
 	   ((memq c '(?c ?\C-c)) (setq dir (org-attach-dir t)))
-	   ((and  (memq c '(?i ?\C-i)) inhdir) (setq dir inhdir))
+	   ((and (memq c '(?i ?\C-i)) inhdir) (setq dir inhdir))
+	   ((and (memq c '(?d ?\C-d))
+		 funcdir) (progn (org-entry-put nil "ATTACH_DIR" funcdir)
+				 (setq dir (org-attach-dir t))))
 	   (t (error "No such attachment command %c" c)) )) 
 	;; we return the directory name and create it if necessary
 	dir)
