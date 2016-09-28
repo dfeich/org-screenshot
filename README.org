@@ -34,7 +34,7 @@
 (require 'org-attach-screenshot)
   #+END_SRC
 
-  You can customize the command that is used for taking the screenshot
+  You can customize the *command that is used for taking the screenshot*
   by configuring the =org-attach-screenshot-command-line= variable.
 
   #+BEGIN_SRC emacs-lisp
@@ -43,7 +43,28 @@
 
   By default the =import= command from the ImageMagick suite is used, i.e.
   the variable is set to "import %f".
-  
+
+  You can also specify a *function for generating a directory name*, e.g. I
+  often prefer to have the attachment directory names to be linked to the
+  document name, so all screenshots and other material are in a directory
+  that can be conveniently moved together with the main document. You
+  can configure this by setting =org-attach-screenshot-dirfunction=
+  to a function returning the directory name, e.g.
+
+  #+BEGIN_SRC emacs-lisp
+  (setq org-attach-screenshot-dirfunction
+		(lambda () 
+		  (progn (assert (buffer-file-name))
+			 (concat (file-name-sans-extension (buffer-file-name))
+				 "_att"))))
+  #+END_SRC
+
+  If =org-attach-screenshot-relative-links= is set to =t= the filename references
+  placed in the org file will be relative filenames. This is probably the best
+  default, since normally you want to be able to move the document together with
+  its attachment directory. If you set this option to =nil= absolute path names
+  will be used.
+
 * Usage
   While in an org mode buffer, use the *org-attach-screenshot* command to take a screenshot and
   have it inserted at the current point.
