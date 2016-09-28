@@ -3,7 +3,7 @@
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
 ;; Homepage: https://github.com/dfeich/org-screenshot
-;; Version: 0.1.20160529
+;; Version: 0.1.20160928
 
 ;; This file is not part of GNU Emacs.
 
@@ -93,9 +93,15 @@ Note that the screenshots are not stored as actual attachments
 which would mean that entries for the Attachments would be
 written to the PROPERTIES section of a headline in addition to
 the links being already placed inside the text."
-  (interactive "P\nsScreenshot base filename: ")
-  (if (equal filename "")
-      (setq filename (format-time-string "screenshot-%Y%m%d-%H%M%S.png")))
+  
+  (interactive (list current-prefix-arg
+		     (let ((defval (format-time-string
+				    "screenshot-%Y%m%d-%H%M%S.png")))
+		       (read-string
+			(format "Screenshot base filename (%s): "
+				defval)
+			nil nil
+			defval))))
   (unless (file-name-extension filename)
     (setq filename (concat filename ".png")))
   (if (equal major-mode 'org-mode)
