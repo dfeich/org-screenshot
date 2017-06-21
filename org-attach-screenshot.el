@@ -104,39 +104,41 @@ the links being already placed inside the text."
 			defval))))
   (unless (file-name-extension filename)
     (setq filename (concat filename ".png")))
-  (if (equal major-mode 'org-mode)
-      (let ((scrfilename (concat (file-name-as-directory
-				  (org-attach-screenshot-get-attach-dir))
-				 filename))
-	    linkfilename status)
-	(if org-attach-screenshot-relative-links
-	    (setq linkfilename
-		  (file-relative-name
-		   scrfilename (file-name-directory
-				(or (buffer-file-name) default-directory))))
-	  (setq linkfilename scrfilename))
-	(if (and (file-exists-p scrfilename)
-		 (not (y-or-n-p (format "%s already exists. Overwrite?"
-					scrfilename))))
-	    (call-interactively 'org-attach-screenshot)
-	  (insert (concat "[[file:" linkfilename "]]"))
-	  (unless prfx (make-frame-invisible nil t))
-	  ;; we must canoncicalize the file name when we hand it
-	  ;; by call-process to the import command
-	  (let* ((arglst (split-string org-attach-screenshot-command-line " "))
-		 (cmd (car arglst))
-		 (scrpath (convert-standard-filename  (expand-file-name scrfilename)))
-		 (args (mapcar (lambda (x) (replace-regexp-in-string "%f" scrpath x t t))
-			       (cdr arglst))))
-	    (setq status (apply 'call-process cmd nil nil nil args))
-	    (unless prfx (make-frame-visible))
-	    (unless (equal status 0)
-	      (error "screenshot command exited with status %d: %s" status
-		     (mapconcat 'identity (cons cmd args) " ")) )
-	    (message "wrote screenshot to %s" scrpath))
-	  (org-display-inline-images nil t)))
-    (error "you are not in org mode - refusing to take a screenshot"))
-  )
+  (assert (equal major-mode 'org-mode) nil
+	  "you must be in org mode to take a screenshot")
+  (let* ((scrfilename (concat (file-name-as-directory
+			       (org-attach-screenshot-get-attach-dir))
+			      filename))
+	 (arglst (split-string org-attach-screenshot-command-line " "))
+	 (cmd (car arglst))
+	 linkfilename status)
+    (assert (executable-find cmd) nil
+	    "Cannot find executable '%s'. Please check org-attach-screenshot-command-line"
+	    cmd)
+    (if org-attach-screenshot-relative-links
+	(setq linkfilename
+	      (file-relative-name
+	       scrfilename (file-name-directory
+			    (or (buffer-file-name) default-directory))))
+      (setq linkfilename scrfilename))
+    (if (and (file-exists-p scrfilename)
+	     (not (y-or-n-p (format "%s already exists. Overwrite?"
+				    scrfilename))))
+	(call-interactively 'org-attach-screenshot)
+      (insert (concat "[[file:" linkfilename "]]"))
+      (unless prfx (make-frame-invisible nil t))
+      ;; we must canoncicalize the file name when we hand it
+      ;; by call-process to the import command
+      (let* ((scrpath (convert-standard-filename  (expand-file-name scrfilename)))
+	     (args (mapcar (lambda (x) (replace-regexp-in-string "%f" scrpath x t t))
+			   (cdr arglst))))
+	(setq status (apply 'call-process cmd nil nil nil args))
+	(unless prfx (make-frame-visible))
+	(unless (equal status 0)
+	  (error "screenshot command exited with status %d: %s" status
+		 (mapconcat 'identity (cons cmd args) " ")) )
+	(message "wrote screenshot to %s" scrpath))
+      (org-display-inline-images nil t))))
 
 (defun org-attach-screenshot-get-attach-dir ()
   "Return or create the current entry's attachment directory.
