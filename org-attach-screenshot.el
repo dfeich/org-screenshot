@@ -104,7 +104,7 @@ the links being already placed inside the text."
 			defval))))
   (unless (file-name-extension filename)
     (setq filename (concat filename ".png")))
-  (assert (equal major-mode 'org-mode) nil
+  (assert (derived-mode-p 'org-mode) nil
 	  "you must be in org mode to take a screenshot")
   (let* ((scrfilename (concat (file-name-as-directory
 			       (org-attach-screenshot-get-attach-dir))
@@ -146,7 +146,7 @@ Also offers the option of using an attachment directory defined
 higher up in the org headline hierarchy, even though attachment
 inheritance has not been turned on by ATTACH_DIR_INHERIT."
   (require 'org-attach)
-  (if (equal major-mode 'org-mode)
+  (if (derived-mode-p 'org-mode)
       (let 
 	  ((dir (org-attach-dir)) (tmpbuf "*Screenshot Attach*")
 	   (inhdir (org-entry-get nil "ATTACH_DIR" t))
