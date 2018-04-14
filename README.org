@@ -13,8 +13,8 @@
   /org-attach-screenshot/.
 
   Features:
-  - The link to the image file will be placed at /point/
-  - /org inline images/ will be turned on to display it.
+  - The link to the image file will be placed at /point./
+  - /org inline images/ can be automatically refreshed to display it immediately.
   - Screenshots are placed into the org entry's attachment
     directory.
   - If no attachment directory has been defined, the user will be
@@ -38,7 +38,7 @@
   by configuring the =org-attach-screenshot-command-line= variable.
 
   #+BEGIN_SRC emacs-lisp
-    (setq org-attach-screenshot-command-line "mycommand -x -y -z %f")    
+    (setq org-attach-screenshot-command-line "mycommand -x -y -z %f")
   #+END_SRC
 
   By default the =import= command from the ImageMagick suite is used, i.e.
@@ -53,10 +53,10 @@
 
   #+BEGIN_SRC emacs-lisp
   (setq org-attach-screenshot-dirfunction
-		(lambda () 
-		  (progn (assert (buffer-file-name))
-			 (concat (file-name-sans-extension (buffer-file-name))
-				 "_att"))))
+        (lambda ()
+          (progn (assert (buffer-file-name))
+             (concat (file-name-sans-extension (buffer-file-name))
+                 "_att"))))
   #+END_SRC
 
   If =org-attach-screenshot-relative-links= is set to =t= the filename references
@@ -64,6 +64,12 @@
   default, since normally you want to be able to move the document together with
   its attachment directory. If you set this option to =nil= absolute path names
   will be used.
+
+  If =org-attach-screenshot-auto-refresh= is set to non-nil the buffers
+  inline images will be automatically refreshed to display every
+  inserted image immediately. Set this to nil if you prefere to manually
+  refresh inline images. In this case you will just see the link
+  to the image file after calling `org-attach-screenshot'.
 
 * Usage
   While in an org mode buffer, use the *org-attach-screenshot* command to take a screenshot and
@@ -102,4 +108,3 @@
   to rather make it independent instead of forcing users to install both.
   I wanted to have an especially well integrated screenshot feature to
   match the org workflow.
-
