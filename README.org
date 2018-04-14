@@ -15,7 +15,7 @@
   Features:
   - The link to the image file will be placed at /point./
   - /org inline images/ can be automatically refreshed to display the
-    imeage immediately.
+    image immediately.
   - Screenshots are placed into the org entry's attachment
     directory.
   - If no attachment directory has been defined, the user will be
@@ -70,7 +70,7 @@
   inline images will be automatically refreshed to display every
   inserted image immediately. Set this to nil if you prefere to manually
   refresh inline images. In this case you will just see the link
-  to the image file after calling `org-attach-screenshot'.
+  to the image file after calling =org-attach-screenshot=.
 
 * Usage
   While in an org mode buffer, use the *org-attach-screenshot* command to take a screenshot and
