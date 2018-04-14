@@ -14,7 +14,8 @@
 
   Features:
   - The link to the image file will be placed at /point./
-  - /org inline images/ can be automatically refreshed to display it immediately.
+  - /org inline images/ can be automatically refreshed to display the
+    imeage immediately.
   - Screenshots are placed into the org entry's attachment
     directory.
   - If no attachment directory has been defined, the user will be
