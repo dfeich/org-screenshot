@@ -71,6 +71,19 @@ always be relative filenames.  If nil, the links will just be the
 concatenation of the attachment dir and the filename"
   :type 'boolean :group 'org-attach-screenshot)
 
+(defcustom org-attach-screenshot-auto-refresh 'always
+  "Refresh inline image display after inserting an image.
+Set this to `always' if you want to see every new image
+immediately after calling `org-attach-screenshot'. Set this to
+`never' if you prefere to manually refresh inline image display.
+In this case `org-attach-screenshot' will always just insert the
+link to the image file. Set this to `ask' if you want
+`org-attach-screenshot' to ask you after every insertion if you
+would like to refresh the buffer's inline images."
+  :type 'symbol
+  :options (list 'always 'never 'ask)
+  :group 'org-attach-screenshot)
+
 ;;;###autoload
 (defun org-attach-screenshot (prfx filename)
   "Take an area screenshot and place it in the entry's attachment directory.
@@ -138,7 +151,10 @@ the links being already placed inside the text."
 	  (error "screenshot command exited with status %d: %s" status
 		 (mapconcat 'identity (cons cmd args) " ")) )
 	(message "wrote screenshot to %s" scrpath))
-      (org-display-inline-images nil t))))
+      (when (or (eq org-attach-screenshot-auto-refresh 'always)
+                (and (eq org-attach-screenshot-auto-refresh 'ask)
+                     (y-or-n-p "Refresh inline images?")))
+        (org-display-inline-images nil t)))))
 
 (defun org-attach-screenshot-get-attach-dir ()
   "Return or create the current entry's attachment directory.
