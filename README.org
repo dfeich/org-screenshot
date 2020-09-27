@@ -44,6 +44,21 @@
   By default the =import= command from the ImageMagick suite is used, i.e.
   the variable is set to "import %f".
 
+  If your preferred screenshot utility does not allow the passing of a 
+  filename as an argument, the suggested solution is to create a small
+  wrapper shell script that provides this functionality. Below is an
+  example shell script that wrap the [[https://flameshot.js.org/#/][flameshot utility]].
+  
+  #+BEGIN_SRC bash
+  #!/bin/bash
+  fname="$1"
+  tmpf=$(mktemp -t flshot-XXXX)
+
+  flameshot gui --raw > "$tmpf"
+
+  mv "$tmpf" $1
+  #+END_SRC
+
   You can also specify a *function for generating a directory name*, e.g. I
   often prefer to have the attachment directory names to be linked to the
   document name, so all screenshots and other material are in a directory
