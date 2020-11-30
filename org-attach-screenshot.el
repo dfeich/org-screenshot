@@ -44,6 +44,10 @@
 
 (require 'org-attach)
 
+;; for assert macro
+(eval-when-compile
+  (require 'cl))
+
 ;; save-mark-and-excursion in Emacs 25 works like save-excursion did before
 (eval-when-compile
   (when (< emacs-major-version 25)
