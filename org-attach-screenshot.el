@@ -1,9 +1,10 @@
-;;; org-attach-screenshot.el --- screenshots integrated with org attachment dirs
+;;; org-attach-screenshot.el --- Screenshots integrated with org attachment dirs
 
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
-;; Keywords: org
+;; Keywords: org multimedia
+;; Package-Requires: ((emacs "24.3"))
 ;; Homepage: https://github.com/dfeich/org-screenshot
-;; Version: 0.1.20160928
+;; Version: 0.9
 
 ;; This file is not part of GNU Emacs.
 
@@ -22,7 +23,7 @@
 
 ;;; Commentary:
 
-;; allows taking screenshots from within an emacs org buffer by using
+;; allows taking screenshots from within an Emacs org buffer by using
 ;; the org-attach-screenshot command. The link to the file will be placed at
 ;; (point) and org inline images will be turned on to display it.
 
@@ -31,9 +32,9 @@
 ;; will be offered choices for creating one or using a directory of an
 ;; entry higher up in the hierarchy.
 ;;
-;; The emacs frame from which the command is issued will hide away
+;; The Emacs frame from which the command is issued will hide away
 ;; during the screenshot taking, except if a prefix argument has been
-;; given (so to allow taking images of the emacs session itself).
+;; given (so to allow taking images of the Emacs session itself).
 
 ;; Requires the "import" command from the ImageMagick suite
 
@@ -47,9 +48,11 @@
 
 ;; save-mark-and-excursion in Emacs 25 works like save-excursion did before
 (eval-when-compile
-  (when (< emacs-major-version 25)
-    (defmacro save-mark-and-excursion (&rest body)
-      `(save-excursion ,@body))))
+  (if (< emacs-major-version 25)
+      (defmacro org-attach-screenshot--save-mark-and-excursion (&rest body)
+        `(save-excursion ,@body))
+    (defmacro org-attach-screenshot--save-mark-and-excursion (&rest body)
+      `(save-mark-and-excursion ,@body))))
 
 (defgroup org-attach-screenshot nil
   "Allows taking screenshots from within an emacs org
@@ -59,11 +62,12 @@ by the org attachment system" :group 'org :version 24.3)
 (defcustom org-attach-screenshot-command-line "import %f"
   "Contains the command line used to take a screenshot.
 You need to indicate the place where the filename should be
-substituted by %f" :group 'org-attach-screenshot)
+substituted by %f" :group 'org-attach-screenshot :type 'string)
 
 (defcustom org-attach-screenshot-dirfunction nil
   "Function generating an attachment directory name.
-Will be used to generate a directory name if it is not set to nil.")
+Will be used to generate a directory name if it is not set to nil."
+  :type 'function)
 
 (defcustom org-attach-screenshot-relative-links t
   "Configure whether to use relative filenames.
@@ -136,7 +140,7 @@ the links being already placed inside the text."
 			    (or (buffer-file-name) default-directory))))
       (setq linkfilename scrfilename))
     (if (and (file-exists-p scrfilename)
-	     (not (y-or-n-p (format "%s already exists. Overwrite?"
+	     (not (y-or-n-p (format "%s already exists. Overwrite? "
 				    scrfilename))))
 	(call-interactively 'org-attach-screenshot)
       (insert (concat "[[file:" linkfilename "]]"))
@@ -149,12 +153,12 @@ the links being already placed inside the text."
 	(setq status (apply 'call-process cmd nil nil nil args))
 	(unless prfx (make-frame-visible))
 	(unless (equal status 0)
-	  (error "screenshot command exited with status %d: %s" status
+	  (error "Screenshot command exited with status %d: %s" status
 		 (mapconcat 'identity (cons cmd args) " ")) )
 	(message "wrote screenshot to %s" scrpath))
       (when (or (eq org-attach-screenshot-auto-refresh 'always)
                 (and (eq org-attach-screenshot-auto-refresh 'ask)
-                     (y-or-n-p "Refresh inline images?")))
+                     (y-or-n-p "Refresh inline images? ")))
         (org-display-inline-images nil t)))))
 
 (defun org-attach-screenshot-get-attach-dir ()
@@ -164,14 +168,14 @@ higher up in the org headline hierarchy, even though attachment
 inheritance has not been turned on by ATTACH_DIR_INHERIT."
   (require 'org-attach)
   (if (derived-mode-p 'org-mode)
-      (let 
+      (let
 	  ((dir (org-attach-dir)) (tmpbuf "*Screenshot Attach*")
 	   (inhdir (org-entry-get nil "ATTACH_DIR" t))
 	   (funcdir (when org-attach-screenshot-dirfunction
 		      (funcall org-attach-screenshot-dirfunction)))
 	   c)
 	(unless dir
-	  (save-mark-and-excursion
+	  (org-attach-screenshot--save-mark-and-excursion
 	   (save-window-excursion
 	     (with-output-to-temp-buffer tmpbuf
 	       (princ (concat
@@ -200,8 +204,8 @@ i       use attachment directory of ancestor entry:" "
 	   ((and (memq c '(?i ?\C-i)) inhdir) (setq dir inhdir))
 	   ((and (memq c '(?d ?\C-d))
 		 funcdir) (progn (org-entry-put nil "ATTACH_DIR" funcdir)
-				 (setq dir (org-attach-dir t))))
-	   (t (error "No such attachment command %c" c)) )) 
+		 (setq dir (org-attach-dir t))))
+	   (t (error "No such attachment command %c" c)) ))
 	;; we return the directory name and create it if necessary
 	dir)
     (error "This is not org-mode, but %s" major-mode) nil))
