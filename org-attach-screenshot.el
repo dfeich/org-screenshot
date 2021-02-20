@@ -43,10 +43,7 @@
 ;;; Code:
 
 (require 'org-attach)
-
-;; for assert macro
-(eval-when-compile
-  (require 'cl))
+(require 'cl-lib)
 
 ;; save-mark-and-excursion in Emacs 25 works like save-excursion did before
 (eval-when-compile
@@ -121,17 +118,17 @@ the links being already placed inside the text."
 			defval))))
   (unless (file-name-extension filename)
     (setq filename (concat filename ".png")))
-  (assert (derived-mode-p 'org-mode) nil
-	  "you must be in org mode to take a screenshot")
+  (cl-assert (derived-mode-p 'org-mode) nil
+	     "you must be in org mode to take a screenshot")
   (let* ((scrfilename (concat (file-name-as-directory
 			       (org-attach-screenshot-get-attach-dir))
 			      filename))
 	 (arglst (split-string org-attach-screenshot-command-line " "))
 	 (cmd (car arglst))
 	 linkfilename status)
-    (assert (executable-find cmd) nil
-	    "Cannot find executable '%s'. Please check org-attach-screenshot-command-line"
-	    cmd)
+    (cl-assert (executable-find cmd) nil
+	       "Cannot find executable '%s'. Please check org-attach-screenshot-command-line"
+	       cmd)
     (if org-attach-screenshot-relative-links
 	(setq linkfilename
 	      (file-relative-name
