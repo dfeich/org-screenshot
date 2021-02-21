@@ -36,7 +36,8 @@
 ;; during the screenshot taking, except if a prefix argument has been
 ;; given (so to allow taking images of the Emacs session itself).
 
-;; Requires the "import" command from the ImageMagick suite
+;; You can customize the command that is executed for taking the
+;; screenshot. Look at the various customization variables.
 
 ;; Put this file into your load-path and the following into your ~/.emacs:
 ;;   (require 'org-attach-screenshot)
@@ -87,6 +88,20 @@ link to the image file. Set this to `ask' if you want
 would like to refresh the buffer's inline images."
   :type 'symbol
   :options (list 'always 'never 'ask)
+  :group 'org-attach-screenshot)
+
+(defun org-attach-screenshot-defaultinsert (linkfilename)
+  "Default function for inserting the image link into the document.
+The image's filename is passed as the only argument `LINKFILENAME'."
+  (insert (concat "[[file:" linkfilename "]]")))
+
+(defcustom org-attach-screenshot-insertfunction 'org-attach-screenshot-defaultinsert
+  "Function to call for the actual insertion of the image link.
+This function will be called with the single argument of the
+image file name. You may substitute an own function, e.g. for
+naming images using org decorator features like #+NAME,
+#+CAPTION, etc., or you may want to include other side effects."
+  :type 'function
   :group 'org-attach-screenshot)
 
 ;;;###autoload
@@ -143,7 +158,8 @@ the links being already placed inside the text."
 	     (not (y-or-n-p (format "%s already exists. Overwrite? "
 				    scrfilename))))
 	(call-interactively 'org-attach-screenshot)
-      (insert (concat "[[file:" linkfilename "]]"))
+      ;;(insert (concat "[[file:" linkfilename "]]"))
+      (funcall org-attach-screenshot-insertfunction linkfilename)
       (unless prfx (make-frame-invisible nil t))
       ;; we must canoncicalize the file name when we hand it
       ;; by call-process to the import command
